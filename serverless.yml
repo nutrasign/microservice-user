@@ -1,0 +1,39 @@
+service: USERS
+
+package:
+  individually: true
+  exclude:
+    - aws-sdk
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  webpack:
+    webpackConfig: 'webpack.config.js' # Name of webpack configuration file
+    includeModules:
+      forceExclude:
+      - aws-sdk
+    packager: 'npm' # Packager that will be used to package your external modules
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-east-1
+  versionFunctions: false
+  timeout: 300
+  memorySize: 1024
+  environment: ${file(config-${self:custom.stage}.yml):environment}
+  # vpc: ${file(config-${self:custom.stage}.yml):vpc}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+       -
+         "*"
+      Resource: "*"
+
+functions: ${file(functions-${self:custom.stage}.yml):functions}

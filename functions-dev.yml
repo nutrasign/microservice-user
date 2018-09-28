@@ -1,0 +1,31 @@
+functions:
+  Docs:
+    handler: src/functions/docs/handler.router
+    events:
+    - http:
+        path: /
+        method: get
+        cors: true
+  Users:
+    handler: src/functions/user/handler.router
+    events:
+      - http:
+          path: /users
+          method: get
+          cors: true
+      - http:
+          path: /users
+          method: post
+          cors: true
+      - http:
+          path: /user/{id}
+          method: get
+          cors: true
+      - http:
+          path: /user/{id}
+          method: put
+          cors: true
+      - http:
+          path: /user/{id}
+          method: delete
+          cors: true

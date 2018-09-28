@@ -1,0 +1,8 @@
+functions:
+  Users:
+    handler: src/functions/handler.router
+    events:
+      - http:
+          path: /
+          method: get
+          cors: true

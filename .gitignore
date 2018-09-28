@@ -1,0 +1,16 @@
+.tmp/
+coverage/
+dist/
+node_modules/
+
+.idea/**/*
+.serverless
+_optimize
+slscrypt/
+flow-typed/
+.nyc_output
+.webpack
+.npm-debug*
+eslint.xml
+
+package-lock.json

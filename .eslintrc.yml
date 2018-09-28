@@ -1,0 +1,10 @@
+extends: standard
+parser: babel-eslint
+rules:
+plugins:
+  - standard
+  - promise
+  - security
+env:
+  mocha: true
+

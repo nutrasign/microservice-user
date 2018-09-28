@@ -1,0 +1,793 @@
+{
+  "openapi": "3.0.0",
+  "components": {
+    "schemas": {
+      "JobResponse": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "required": true,
+            "type": "string",
+            "description": "The queried job id"
+          },
+          "status": {
+            "required": true,
+            "type": "string",
+            "description": "The status of the current job",
+            "enum": [
+              "pending",
+              "fail",
+              "complete"
+            ]
+          },
+          "result": {
+            "type": "object",
+            "description": "The result of the previous API request. Check the docs of the event"
+          }
+        }
+      },
+      "TransferResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "required": true,
+            "type": "string",
+            "description": "Transaction status",
+            "enum": [
+              "failed",
+              "success",
+              "pending"
+            ]
+          },
+          "txHash": {
+            "required": true,
+            "type": "string",
+            "description": "Transaction hash created by the transfer"
+          }
+        }
+      },
+      "TransferRequest": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "description": "Address where the tokens are added",
+            "example": "0x14e60cd5cc0362a8415fa6df849b5c7ab317e4b5",
+            "required": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Amount of tokens to move in little-bits",
+            "required": true,
+            "type": "number"
+          }
+        }
+      },
+      "RequestPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "txHash": {
+            "required": true,
+            "type": "string",
+            "description": "Transaction hash created by the payment"
+          },
+          "ref": {
+            "required": true,
+            "type": "string",
+            "description": "Payment reference used to perform the payment"
+          }
+        }
+      },
+      "RequestPaymentRequest": {
+        "type": "object",
+        "properties": {
+          "seller": {
+            "description": "Seller address",
+            "example": "0xdfad6cec214d22b71140379c7d4cbc303dc74c92",
+            "required": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Amount to pay to the seller in little-bits (1KNW = 100000000 little-bits)",
+            "required": true,
+            "type": "number"
+          },
+          "fee": {
+            "description": "Amount to pay to the store in little-bits",
+            "required": true,
+            "type": "number"
+          }
+        }
+      },
+      "GetPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "store": {
+            "description": "Store address used to perform this payment",
+            "required": true,
+            "type": "string"
+          },
+          "seller": {
+            "description": "Seller address",
+            "required": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Amount to pay to the seller in little-bits (1KNW = 100000000 little-bits)",
+            "required": true,
+            "type": "number"
+          },
+          "fee": {
+            "description": "Amount to pay to the store in little-bits",
+            "required": true,
+            "type": "number"
+          },
+          "ref": {
+            "description": "Reference to use as ID",
+            "required": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "Status of this payment",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "fulfilled",
+              "pending"
+            ]
+          }
+        }
+      },
+      "PayResponse": {
+        "type": "object",
+        "properties": {
+          "txHash": {
+            "type": "string",
+            "description": "Transaction hash created by the payment"
+          },
+          "ref": {
+            "type": "string",
+            "description": "Payment reference used to perform the payment"
+          }
+        }
+      },
+      "CreateWalletResponse": {
+        "type": "object",
+        "properties": {
+          "defaultAddress": {
+            "required": true,
+            "type": "string",
+            "description": "The address created on this wallet"
+          }
+        }
+      },
+      "SummaryResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "required": true,
+            "description": "Status of the ethereum node",
+            "type": "string",
+            "enum": [
+              "online",
+              "offline"
+            ]
+          },
+          "balance": {
+            "required": true,
+            "type": "integer"
+          },
+          "availableBalance": {
+            "required": true,
+            "description": "Same as balance but calculating the pending transactions",
+            "type": "integer"
+          },
+          "defaultAddress": {
+            "required": true,
+            "description": "Default user address",
+            "type": "string"
+          },
+          "transactions": {
+            "required": true,
+            "description": "Details of every transaction",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "direction": {
+                  "required": true,
+                  "description": "Tells if the transaction is adding or substracting balance",
+                  "type": "string",
+                  "enum": [
+                    "incoming",
+                    "outgoing"
+                  ]
+                },
+                "txHash": {
+                  "description": "Tx hash in the ethereum network",
+                  "required": true,
+                  "type": "string"
+                },
+                "status": {
+                  "description": "if the transaction succeeded or not",
+                  "required": true,
+                  "type": "string",
+                  "enum": [
+                    "successful",
+                    "failed"
+                  ]
+                },
+                "type": {
+                  "description": "transactions can be transfer or payments to the store or ad platform",
+                  "required": true,
+                  "type": "string",
+                  "enum": [
+                    "store",
+                    "ads",
+                    "transfer"
+                  ]
+                },
+                "amount": {
+                  "description": "the whole amount including taxes from the store if any",
+                  "required": true,
+                  "type": "number"
+                },
+                "from": {
+                  "description": "Only available if it is an incoming transaction. Tells what address originated the action\n",
+                  "type": "string"
+                },
+                "to": {
+                  "description": "Only available if it is an ongoin transaction. Tells what address was the destination of the tokens\n",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TransactionsResponse": {
+        "type": "object",
+        "properties": {
+          "transactions": {
+            "required": true,
+            "description": "Details of every transaction",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "direction": {
+                  "required": true,
+                  "description": "Tells if the transaction is adding or substracting balance",
+                  "type": "string",
+                  "enum": [
+                    "incoming",
+                    "outgoing"
+                  ]
+                },
+                "txHash": {
+                  "description": "Tx hash in the ethereum network",
+                  "required": true,
+                  "type": "string"
+                },
+                "status": {
+                  "description": "if the transaction succeeded or not",
+                  "required": true,
+                  "type": "string",
+                  "enum": [
+                    "successful",
+                    "failed"
+                  ]
+                },
+                "type": {
+                  "description": "transactions can be transfer or payments to the store or ad platform",
+                  "required": true,
+                  "type": "string",
+                  "enum": [
+                    "store",
+                    "ads",
+                    "transfer"
+                  ]
+                },
+                "amount": {
+                  "description": "the whole amount including taxes from the store if any",
+                  "required": true,
+                  "type": "number"
+                },
+                "from": {
+                  "description": "Only available if it is an incoming transaction. Tells what address originated the action\n",
+                  "type": "string"
+                },
+                "to": {
+                  "description": "Only available if it is an ongoin transaction. Tells what address was the destination of the tokens\n",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BalanceResponse": {
+        "type": "object",
+        "properties": {
+          "balance": {
+            "required": true,
+            "type": "integer"
+          },
+          "availableBalance": {
+            "required": true,
+            "description": "Same as balance but calculating the pending transactions",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "securitySchemes": {}
+  },
+  "info": {
+    "title": "Knowledge Ethereum Service",
+    "description": "This is the Knowledge Ethereum Service, also known as Payment Gateway, used to interact with the Knowledge Contracts on the Ethereum Network. <br><br> - You can find the contracts on our [public repo](https://github.com/knowledge/knowledge-contracts) <br> - You can find the service code in the [private repo](https://github.com/knowledge/knowledge-ethereum-service)",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/job/{id}": {
+      "get": {
+        "operationId": "ethereum",
+        "summary": "Returns the result of a job",
+        "tags": [
+          "job"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Get the result of a job id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transfer": {
+      "post": {
+        "operationId": "ethereum",
+        "summary": "Makes a token transfer",
+        "description": "Transfer tokens between 2 different addresses",
+        "tags": [
+          "transfer"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferRequest"
+              }
+            }
+          },
+          "description": "Transfer information"
+        },
+        "parameters": [
+          {
+            "name": "sync",
+            "in": "query",
+            "description": "Run the request in sync mode",
+            "required": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          },
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "Sender User ID",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "example": 17
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/{store}/{ref}": {
+      "put": {
+        "operationId": "ethereum",
+        "summary": "Create a payment request",
+        "description": "Request a payment to a seller in a store, using a ref to track the transaction and giving a pre-defined fee to the store",
+        "tags": [
+          "payment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPaymentRequest"
+              }
+            }
+          },
+          "description": "Payment information"
+        },
+        "parameters": [
+          {
+            "name": "store",
+            "in": "path",
+            "description": "Store address used to perform this payment",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x14e60cd5cc0362a8415fa6df849b5c7ab317e4b5"
+          },
+          {
+            "name": "ref",
+            "in": "path",
+            "description": "Reference to use as ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sync",
+            "in": "query",
+            "description": "Run the request in sync mode",
+            "required": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestPaymentResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "ethereum",
+        "summary": "Makes a payment",
+        "description": "Performs a previosuly created payment request",
+        "tags": [
+          "payment"
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "description": "Payment ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "store",
+            "in": "path",
+            "description": "Store address where the payment request was originated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x14e60cd5cc0362a8415fa6df849b5c7ab317e4b5"
+          },
+          {
+            "name": "sync",
+            "in": "query",
+            "description": "Run the request in sync mode",
+            "required": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          },
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "Sender User ID",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "example": 17
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ethereum",
+        "summary": "Get a payment request status and info",
+        "tags": [
+          "payment"
+        ],
+        "parameters": [
+          {
+            "name": "store",
+            "in": "path",
+            "description": "Store address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x14e60cd5cc0362a8415fa6df849b5c7ab317e4b5"
+          },
+          {
+            "name": "ref",
+            "in": "path",
+            "description": "Reference ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sync",
+            "in": "query",
+            "description": "Run the request in sync mode",
+            "required": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPaymentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallet/{id}": {
+      "get": {
+        "operationId": "ethereum",
+        "summary": "Returns the wallet summary",
+        "description": "Returns the wallet status with the balance and list of transactions",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Sender ID",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 30
+          },
+          {
+            "name": "sync",
+            "in": "query",
+            "description": "Run the request in sync mode",
+            "required": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          },
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "Sender User ID",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "example": 17
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallet": {
+      "post": {
+        "operationId": "ethereum",
+        "summary": "Creates a new wallet",
+        "description": "Creates a new wallet for the user with a single account",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "Sender User ID",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "example": 17
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWalletResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallet/{id}/transactions": {
+      "get": {
+        "operationId": "ethereum",
+        "summary": "Returns the wallet transactions",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Sender ID",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 30
+          },
+          {
+            "name": "sync",
+            "in": "query",
+            "description": "Run the request in sync mode",
+            "required": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          },
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "Sender User ID",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "example": 17
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallet/{id}/balance": {
+      "get": {
+        "operationId": "ethereum",
+        "summary": "Returns the wallet balance",
+        "tags": [
+          "wallet"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Sender ID",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 30
+          },
+          {
+            "name": "sync",
+            "in": "query",
+            "description": "Run the request in sync mode",
+            "required": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          },
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "Sender User ID",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "example": 17
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status 200 Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

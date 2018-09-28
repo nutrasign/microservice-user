@@ -1,0 +1,5 @@
+environment:
+  STAGE: ${opt:stage, self:provider.stage}
+  REGION: ${opt:region, self:provider.region}
+  APP: 'nutrasign'
+  PASSWORD_LENGTH: '4'
