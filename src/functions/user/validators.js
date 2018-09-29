@@ -42,9 +42,19 @@ const deleteUserById = (input) => {
   return joi.validate(input, schemaDeleteUserById)
 }
 
+const schemaLogin = joi.object().keys({
+  email: joi.string().required().trim().lowercase().email(),
+  password: joi.string().required().trim()
+}).options({stripUnknown: true})
+
+const login = (input) => {
+  return joi.validate(input, schemaLogin)
+}
+
 export {
   validateUser,
   getUserById,
   updateUserById,
-  deleteUserById
+  deleteUserById,
+  login
 }

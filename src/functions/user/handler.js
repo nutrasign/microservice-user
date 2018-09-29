@@ -1,6 +1,11 @@
 import * as util from 'util'
 import { onResult, onError, onInvalidRequest, maybeJSON } from './../utils'
-import { addUser, deleteUserById, getUsers, updateUserById, getUserById } from './controller'
+import { addUser,
+  deleteUserById,
+  getUsers,
+  updateUserById,
+  getUserById,
+  login} from './controller'
 
 const collectionHandlers = {
   '/users': {
@@ -24,7 +29,12 @@ const collectionHandlers = {
     'DELETE': ({event}) => {
       return deleteUserById({input: event.pathParameters})
     }
-  }
+  },
+  '/login': {
+    'POST': ({event}) => {
+      return login({input: event.body})
+    }
+  },
 }
 
 const router = async (event, context, callback) => {

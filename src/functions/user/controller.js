@@ -1,6 +1,6 @@
 import * as db from './../../db'
 import * as validators from './validators'
-import { encryptWithBcrypt } from './../utils'
+import { encryptWithBcrypt, isValidHashWithBcrypt } from './../utils'
 
 const getUsers = async () => {
   const users = await db.executeQuery({
@@ -89,6 +89,37 @@ const addUser = async ({input}) => {
   }
 }
 
+const login = async ({input}) => {
+  const {error, value: params} = validators.login(input)
+  if (error) {
+    throw error
+  }
+  const {
+    email,
+    password
+  } = params
+
+  const user = await db.executeQuery({
+    resource: '/getUserByEmail',
+    input: {
+      email
+    }
+  })
+
+  if (!user) {
+    throw new Error('Invalid User')
+  }
+
+  const isPasswordCorrect = isValidHashWithBcrypt({originalValue: password, hash: user.hashedPassword})
+  if (!isPasswordCorrect) {
+    throw new Error('Invalid Password')
+  }
+
+  return {
+    id: user.id
+  }
+}
+
 const deleteUserById = async ({input}) => {
   const {error, value: params} = validators.deleteUserById(input)
   if (error) {
@@ -107,5 +138,6 @@ export {
   getUserById,
   updateUserById,
   deleteUserById,
-  addUser
+  addUser,
+  login
 }

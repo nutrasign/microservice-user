@@ -98,6 +98,19 @@ const deleteUserById = async ({
   }
 }
 
+const getUserByEmail = async ({
+                             email
+                           }) => {
+  try {
+    const client = await getClient()
+    const user = await client.hget(['AUTH:EMAIL', email])
+    return user ? JSON.parse(user) : undefined
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 const getUserById = async ({
                              id
                            }) => {
@@ -164,6 +177,7 @@ const collectionHandlers = {
   '/updateUserById': updateUserById,
   '/getUserById': getUserById,
   '/getUsers': getUsers,
+  '/getUserByEmail': getUserByEmail
 }
 
 const isDisconnection = (error) => {

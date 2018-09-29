@@ -94,12 +94,17 @@ const getKeyFromSecretsManager = async ({secretName}) => {
   return data.SecretBinary
 }
 
+const isValidHashWithBcrypt = ({originalValue, hash}) => {
+  return bcrypt.compareSync(originalValue, hash)
+}
+
 export {
   onResult,
   onMixResult,
   onError,
   onInvalidRequest,
   encryptWithBcrypt,
+  isValidHashWithBcrypt,
   maybeJSON,
   getKeyFromSecretsManager
 }
