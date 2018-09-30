@@ -224,7 +224,7 @@ const addPurchase = async ({input}) => {
     throw error
   }
   const {
-    clientId,
+    userId,
     providerName,
     showProvider,
     documentDate,
@@ -233,7 +233,7 @@ const addPurchase = async ({input}) => {
     products
   } = params
   return {
-    clientId,
+    userId,
     showProvider,
     providerName,
     documentDate,
@@ -241,6 +241,101 @@ const addPurchase = async ({input}) => {
     documentNumber,
     products
   }
+}
+
+const getPurchases = async ({input}) => {
+  const {error, value: params} = validators.getByUserId(input)
+  if (error) {
+    throw error
+  }
+  const {
+    userId,
+  } = params
+  return [
+    {
+      'providerName': 'Coca Cola',
+      'documentDate': '31-10-2018',
+      'documentType': 'PRE',
+      'documentNumber': '1234',
+      'products': [
+        {
+          'name': 'Tomate',
+          'expirationDate': '31-10-2018',
+          'barcode': '123456789',
+          'quantity': 10,
+          'price': 2000
+        }
+      ]
+    }
+  ]
+}
+
+const getClients = async ({input}) => {
+  const {error, value: params} = validators.getByUserId(input)
+  if (error) {
+    throw error
+  }
+  const {
+    userId,
+  } = params
+  return [
+    {
+      'name': 'Coca Cola',
+      'code': '12345',
+      'address': 'Rivas',
+      'postalCode': '12345',
+      'city': 'SJ',
+      'country': 'CR',
+      'commercialContactName': '',
+      'commercialContactRol': '',
+      'commercialContactEmail': '',
+      'commercialContactPhone': '',
+      'emergencyContactName': '',
+      'emergencyContactRol': '',
+      'emergencyContactEmail': '',
+      'emergencyContactPhone': '',
+      'certificates': [
+        {
+          'name': 'ISO-2000',
+          'number': '1234567'
+        }
+      ]
+    }
+  ]
+}
+
+const getProviders = async ({input}) => {
+  const {error, value: params} = validators.getByUserId(input)
+  if (error) {
+    throw error
+  }
+  const {
+    userId,
+  } = params
+  return [
+    {
+      'name': 'Coca Cola',
+      'code': '12345',
+      'address': 'Rivas',
+      'postalCode': '12345',
+      'city': 'SJ',
+      'country': 'CR',
+      'commercialContactName': '',
+      'commercialContactRol': '',
+      'commercialContactEmail': '',
+      'commercialContactPhone': '',
+      'emergencyContactName': '',
+      'emergencyContactRol': '',
+      'emergencyContactEmail': '',
+      'emergencyContactPhone': '',
+      'certificates': [
+        {
+          'name': 'ISO-2000',
+          'number': '1234567'
+        }
+      ]
+    }
+  ]
 }
 
 export {
@@ -252,5 +347,8 @@ export {
   login,
   addProvider,
   addClient,
-  addPurchase
+  addPurchase,
+  getPurchases,
+  getClients,
+  getProviders
 }

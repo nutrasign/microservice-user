@@ -22,6 +22,14 @@ const getUserById = (input) => {
   return joi.validate(input, schemaGetUserById)
 }
 
+const schemaGetByUserId = joi.object().keys({
+  userId: joi.string().required().trim()
+}).options({stripUnknown: true})
+
+const getByUserId = (input) => {
+  return joi.validate(input, schemaGetByUserId)
+}
+
 const schemaUpdateUserById = joi.object().keys({
   id: joi.string().required().trim(),
   name: joi.string().optional().trim().default('').allow(''),
@@ -52,7 +60,7 @@ const login = (input) => {
 }
 
 const schemaAddProvider = joi.object().keys({
-  clientId: joi.string().required().trim(),
+  userId: joi.string().required().trim(),
   name: joi.string().required().trim(),
   code: joi.string().required().trim(),
   address: joi.string().required().trim(),
@@ -80,7 +88,7 @@ const addProvider = (input) => {
 }
 
 const schemaAddClient = joi.object().keys({
-  clientId: joi.string().required().trim(),
+  userId: joi.string().required().trim(),
   name: joi.string().required().trim(),
   code: joi.string().required().trim(),
   address: joi.string().required().trim(),
@@ -108,7 +116,7 @@ const addClient = (input) => {
 }
 
 const schemaAddPurchase = joi.object().keys({
-  clientId: joi.string().required().trim(),
+  userId: joi.string().required().trim(),
   providerName: joi.string().required().trim(),
   documentDate: joi.string().required().trim(),
   documentType: joi.string().required().trim(),
@@ -135,5 +143,7 @@ export {
   deleteUserById,
   login,
   addProvider,
-  addPurchase
+  addPurchase,
+  addClient,
+  getByUserId
 }

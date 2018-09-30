@@ -45,3 +45,15 @@ functions:
           path: /clients
           method: post
           cors: true
+      - http:
+          path: /providers/{userId}
+          method: get
+          cors: true
+      - http:
+          path: /purchases/{userId}
+          method: get
+          cors: true
+      - http:
+          path: /clients/{userId}
+          method: get
+          cors: true

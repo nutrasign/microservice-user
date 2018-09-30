@@ -1,30 +1,20 @@
 import * as util from 'util'
 import { onResult, onError, onInvalidRequest, maybeJSON } from './../utils'
-import {
-  addUser,
-  deleteUserById,
-  getUsers,
-  updateUserById,
-  getUserById,
-  login,
-  addProvider,
-  addPurchase,
-  addClient
-} from './controller'
+import * as controller from './controller'
 
 const collectionHandlers = {
   '/users': {
-    'GET': getUsers,
+    'GET': controller.getUsers,
     'POST': ({event}) => {
-      return addUser({input: event.body})
+      return controller.addUser({input: event.body})
     }
   },
   '/user/{id}': {
     'GET': ({event}) => {
-      return getUserById({input: event.pathParameters})
+      return controller.getUserById({input: event.pathParameters})
     },
     'PUT': ({event}) => {
-      return updateUserById({
+      return controller.updateUserById({
         input: {
           ...maybeJSON(event.pathParameters),
           ...maybeJSON(event.body)
@@ -32,27 +22,42 @@ const collectionHandlers = {
       })
     },
     'DELETE': ({event}) => {
-      return deleteUserById({input: event.pathParameters})
+      return controller.deleteUserById({input: event.pathParameters})
     }
   },
   '/login': {
     'POST': ({event}) => {
-      return login({input: event.body})
+      return controller.login({input: event.body})
     }
   },
   '/providers': {
     'POST': ({event}) => {
-      return addProvider({input: event.body})
+      return controller.addProvider({input: event.body})
     }
   },
   '/clients': {
     'POST': ({event}) => {
-      return addClient({input: event.body})
+      return controller.addClient({input: event.body})
     }
   },
   '/purchases': {
     'POST': ({event}) => {
-      return addPurchase({input: event.body})
+      return controller.addPurchase({input: event.body})
+    }
+  },
+  '/providers/{userId}': {
+    'GET': ({event}) => {
+      return controller.getProviders({input: event.pathParameters})
+    }
+  },
+  '/clients/{userId}': {
+    'GET': ({event}) => {
+      return controller.getClients({input: event.pathParameters})
+    }
+  },
+  '/purchases/{userId}': {
+    'GET': ({event}) => {
+      return controller.getPurchases({input: event.pathParameters})
     }
   }
 }
