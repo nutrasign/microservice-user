@@ -1,11 +1,14 @@
 import * as util from 'util'
 import { onResult, onError, onInvalidRequest, maybeJSON } from './../utils'
-import { addUser,
+import {
+  addUser,
   deleteUserById,
   getUsers,
   updateUserById,
   getUserById,
-  login} from './controller'
+  login,
+  addProvider
+} from './controller'
 
 const collectionHandlers = {
   '/users': {
@@ -35,6 +38,11 @@ const collectionHandlers = {
       return login({input: event.body})
     }
   },
+  '/providers': {
+    'POST': ({event}) => {
+      return addProvider({input: event.body})
+    }
+  }
 }
 
 const router = async (event, context, callback) => {

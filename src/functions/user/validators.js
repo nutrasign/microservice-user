@@ -51,10 +51,39 @@ const login = (input) => {
   return joi.validate(input, schemaLogin)
 }
 
+const schemaAddProvider = joi.object().keys({
+  clientId: joi.string().required().trim(),
+  name: joi.string().required().trim(),
+  code: joi.string().required().trim(),
+  address: joi.string().required().trim(),
+  postalCode: joi.string().required().trim(),
+  city: joi.string().required().trim(),
+  country: joi.string().required().trim(),
+  commercialContactName: joi.string().optional().trim().allow('').default(''),
+  commercialContactRol: joi.string().optional().trim().allow('').default(''),
+  commercialContactEmail: joi.string().optional().trim().allow('').default(''),
+  commercialContactPhone: joi.string().optional().trim().allow('').default(''),
+  emergencyContactName: joi.string().optional().trim().allow('').default(''),
+  emergencyContactRol: joi.string().optional().trim().allow('').default(''),
+  emergencyContactEmail: joi.string().optional().trim().allow('').default(''),
+  emergencyContactPhone: joi.string().optional().trim().allow('').default(''),
+  certificates: joi.array().items(joi.object().keys(
+    {
+      name: joi.string().optional().trim().allow('').default(''),
+      number: joi.string().optional().trim().allow('').default('')
+    }
+  )).optional().allow([]).default([])
+}).options({stripUnknown: true})
+
+const addProvider = (input) => {
+  return joi.validate(input, schemaAddProvider)
+}
+
 export {
   validateUser,
   getUserById,
   updateUserById,
   deleteUserById,
-  login
+  login,
+  addProvider
 }

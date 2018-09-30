@@ -29,3 +29,11 @@ functions:
           path: /user/{id}
           method: delete
           cors: true
+      - http:
+          path: /login
+          method: post
+          cors: true
+      - http:
+          path: /providers
+          method: post
+          cors: true

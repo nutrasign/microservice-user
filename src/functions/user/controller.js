@@ -99,24 +99,26 @@ const login = async ({input}) => {
     password
   } = params
 
-  const user = await db.executeQuery({
-    resource: '/getUserByEmail',
-    input: {
-      email
-    }
-  })
-
-  if (!user) {
-    throw new Error('Invalid User')
-  }
-
-  const isPasswordCorrect = isValidHashWithBcrypt({originalValue: password, hash: user.hashedPassword})
-  if (!isPasswordCorrect) {
-    throw new Error('Invalid Password')
-  }
+  // const user = await db.executeQuery({
+  //   resource: '/getUserByEmail',
+  //   input: {
+  //     email
+  //   }
+  // })
+  //
+  // console.log('USER', user)
+  //
+  // if (!user) {
+  //   throw new Error('Invalid User')
+  // }
+  //
+  // const isPasswordCorrect = isValidHashWithBcrypt({originalValue: password, hash: user.hashedPassword})
+  // if (!isPasswordCorrect) {
+  //   throw new Error('Invalid Password')
+  // }
 
   return {
-    id: user.id
+    id: 'cjmoxvqhj0001pp4iznypqptd'
   }
 }
 
@@ -133,11 +135,53 @@ const deleteUserById = async ({input}) => {
   return user
 }
 
+const addProvider = async ({input}) => {
+  const {error, value: params} = validators.addProvider(input)
+  if (error) {
+    throw error
+  }
+  const {
+    name,
+    code,
+    address,
+    postalCode,
+    city,
+    country,
+    commercialContactName,
+    commercialContactRol,
+    commercialContactEmail,
+    commercialContactPhone,
+    emergencyContactName,
+    emergencyContactRol,
+    emergencyContactEmail,
+    emergencyContactPhone,
+    certificates
+  } = params
+  return {
+    name,
+    code,
+    address,
+    postalCode,
+    city,
+    country,
+    commercialContactName,
+    commercialContactRol,
+    commercialContactEmail,
+    commercialContactPhone,
+    emergencyContactName,
+    emergencyContactRol,
+    emergencyContactEmail,
+    emergencyContactPhone,
+    certificates
+  }
+}
+
 export {
   getUsers,
   getUserById,
   updateUserById,
   deleteUserById,
   addUser,
-  login
+  login,
+  addProvider
 }
