@@ -41,3 +41,7 @@ functions:
           path: /purchases
           method: post
           cors: true
+      - http:
+          path: /clients
+          method: post
+          cors: true

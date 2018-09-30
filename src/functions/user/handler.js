@@ -8,7 +8,8 @@ import {
   getUserById,
   login,
   addProvider,
-  addPurchase
+  addPurchase,
+  addClient
 } from './controller'
 
 const collectionHandlers = {
@@ -42,6 +43,11 @@ const collectionHandlers = {
   '/providers': {
     'POST': ({event}) => {
       return addProvider({input: event.body})
+    }
+  },
+  '/clients': {
+    'POST': ({event}) => {
+      return addClient({input: event.body})
     }
   },
   '/purchases': {

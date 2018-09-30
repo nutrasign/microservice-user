@@ -177,6 +177,47 @@ const addProvider = async ({input}) => {
   }
 }
 
+const addClient = async ({input}) => {
+  const {error, value: params} = validators.addClient(input)
+  if (error) {
+    throw error
+  }
+  const {
+    name,
+    code,
+    address,
+    postalCode,
+    city,
+    country,
+    commercialContactName,
+    commercialContactRol,
+    commercialContactEmail,
+    commercialContactPhone,
+    emergencyContactName,
+    emergencyContactRol,
+    emergencyContactEmail,
+    emergencyContactPhone,
+    certificates
+  } = params
+  return {
+    name,
+    code,
+    address,
+    postalCode,
+    city,
+    country,
+    commercialContactName,
+    commercialContactRol,
+    commercialContactEmail,
+    commercialContactPhone,
+    emergencyContactName,
+    emergencyContactRol,
+    emergencyContactEmail,
+    emergencyContactPhone,
+    certificates
+  }
+}
+
 const addPurchase = async ({input}) => {
   const {error, value: params} = validators.addPurchase(input)
   if (error) {
@@ -210,5 +251,6 @@ export {
   addUser,
   login,
   addProvider,
+  addClient,
   addPurchase
 }
