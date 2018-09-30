@@ -7,7 +7,8 @@ import {
   updateUserById,
   getUserById,
   login,
-  addProvider
+  addProvider,
+  addPurchase
 } from './controller'
 
 const collectionHandlers = {
@@ -41,6 +42,11 @@ const collectionHandlers = {
   '/providers': {
     'POST': ({event}) => {
       return addProvider({input: event.body})
+    }
+  },
+  '/purchases': {
+    'POST': ({event}) => {
+      return addPurchase({input: event.body})
     }
   }
 }

@@ -37,3 +37,7 @@ functions:
           path: /providers
           method: post
           cors: true
+      - http:
+          path: /purchases
+          method: post
+          cors: true

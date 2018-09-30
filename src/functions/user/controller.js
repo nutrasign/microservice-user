@@ -1,6 +1,7 @@
 import * as db from './../../db'
 import * as validators from './validators'
 import { encryptWithBcrypt, isValidHashWithBcrypt } from './../utils'
+import * as joi from 'joi'
 
 const getUsers = async () => {
   const users = await db.executeQuery({
@@ -176,6 +177,31 @@ const addProvider = async ({input}) => {
   }
 }
 
+const addPurchase = async ({input}) => {
+  const {error, value: params} = validators.addPurchase(input)
+  if (error) {
+    throw error
+  }
+  const {
+    clientId,
+    providerName,
+    showProvider,
+    documentDate,
+    documentType,
+    documentNumber,
+    products
+  } = params
+  return {
+    clientId,
+    showProvider,
+    providerName,
+    documentDate,
+    documentType,
+    documentNumber,
+    products
+  }
+}
+
 export {
   getUsers,
   getUserById,
@@ -183,5 +209,6 @@ export {
   deleteUserById,
   addUser,
   login,
-  addProvider
+  addProvider,
+  addPurchase
 }

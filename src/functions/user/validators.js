@@ -79,11 +79,33 @@ const addProvider = (input) => {
   return joi.validate(input, schemaAddProvider)
 }
 
+const schemaAddPurchase = joi.object().keys({
+  clientId: joi.string().required().trim(),
+  providerName: joi.string().required().trim(),
+  documentDate: joi.string().required().trim(),
+  documentType: joi.string().required().trim(),
+  documentNumber: joi.string().required().trim(),
+  products: joi.array().items(joi.object().keys(
+    {
+      name: joi.string().optional().trim().allow('').default(''),
+      expirationDate: joi.string().optional().trim().allow('').default(''),
+      barcode: joi.string().optional().trim().allow('').default(''),
+      quantity: joi.number().optional().default(0),
+      price: joi.number().optional().default(0)
+    }
+  )).optional().allow([]).default([])
+}).options({stripUnknown: true})
+
+const addPurchase = (input) => {
+  return joi.validate(input, schemaAddPurchase)
+}
+
 export {
   validateUser,
   getUserById,
   updateUserById,
   deleteUserById,
   login,
-  addProvider
+  addProvider,
+  addPurchase
 }
