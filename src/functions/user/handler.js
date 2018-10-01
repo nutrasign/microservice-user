@@ -45,6 +45,11 @@ const collectionHandlers = {
       return controller.addPurchase({input: event.body})
     }
   },
+  '/products': {
+    'POST': ({event}) => {
+      return controller.addProduct({input: event.body})
+    }
+  },
   '/providers/{userId}': {
     'GET': ({event}) => {
       return controller.getProviders({input: event.pathParameters})
@@ -58,6 +63,11 @@ const collectionHandlers = {
   '/purchases/{userId}': {
     'GET': ({event}) => {
       return controller.getPurchases({input: event.pathParameters})
+    }
+  },
+  '/products/{userId}': {
+    'GET': ({event}) => {
+      return controller.getProducts({input: event.pathParameters})
     }
   }
 }

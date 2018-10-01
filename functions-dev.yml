@@ -57,3 +57,11 @@ functions:
           path: /clients/{userId}
           method: get
           cors: true
+      - http:
+          path: /products
+          method: POST
+          cors: true
+      - http:
+          path: /products/{userId}
+          method: get
+          cors: true

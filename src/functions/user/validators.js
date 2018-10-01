@@ -136,6 +136,42 @@ const addPurchase = (input) => {
   return joi.validate(input, schemaAddPurchase)
 }
 
+const schemaAddProduct = joi.object().keys({
+  userId: joi.string().required().trim(),
+  name: joi.string().required().trim(),
+  barcode: joi.string().required().trim(),
+  sanitaryRegistration: joi.string().optional().trim().allow('').default(''),
+  specialCares: joi.string().optional().trim().allow('').default(''),
+  stock: joi.number().optional().default(0),
+  description: joi.string().optional().trim().allow('').default(''),
+  urlImages: joi.array().items(joi.object().keys(
+    {
+      priority: joi.number().optional().default(0),
+      url: joi.string().optional().trim().allow('').default('')
+    }
+  )).optional().allow([]).default([]),
+  urlVideo: joi.string().optional().trim().allow('').default(''),
+  ingredients: joi.array().items(joi.object().keys(
+    {
+      name: joi.string().required().trim(),
+      quantity: joi.number().optional().default(0),
+      quantityUnit: joi.string().optional().trim().allow('').default('')
+    }
+  )).optional().allow([]).default([]),
+  nutritionalValues: joi.array().items(joi.object().keys(
+    {
+      proportion: joi.number().optional().default(0),
+      name: joi.string().required().trim(),
+      quantity: joi.number().optional().default(0),
+      percent: joi.number().optional().default(0)
+    }
+  )).optional().allow([]).default([]),
+}).options({stripUnknown: true})
+
+const addProduct = (input) => {
+  return joi.validate(input, schemaAddProduct)
+}
+
 export {
   validateUser,
   getUserById,
@@ -145,5 +181,6 @@ export {
   addProvider,
   addPurchase,
   addClient,
-  getByUserId
+  getByUserId,
+  addProduct
 }

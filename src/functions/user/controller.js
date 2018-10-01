@@ -243,6 +243,39 @@ const addPurchase = async ({input}) => {
   }
 }
 
+const addProduct = async ({input}) => {
+  const {error, value: params} = validators.addProduct(input)
+  if (error) {
+    throw error
+  }
+  const {
+    userId,
+    name,
+    barcode,
+    sanitaryRegistration,
+    specialCares,
+    stock,
+    description,
+    urlImages,
+    urlVideo,
+    ingredients,
+    nutritionalValues
+  } = params
+  return {
+    userId,
+    name,
+    barcode,
+    sanitaryRegistration,
+    specialCares,
+    stock,
+    description,
+    urlImages,
+    urlVideo,
+    ingredients,
+    nutritionalValues
+  }
+}
+
 const getPurchases = async ({input}) => {
   const {error, value: params} = validators.getByUserId(input)
   if (error) {
@@ -338,6 +371,49 @@ const getProviders = async ({input}) => {
   ]
 }
 
+const getProducts = async ({input}) => {
+  const {error, value: params} = validators.getByUserId(input)
+  if (error) {
+    throw error
+  }
+  const {
+    userId,
+  } = params
+  return [
+    {
+      'userId': 'ABC',
+      'name': 'Leche Descremada',
+      'barcode': '123456789',
+      'sanitaryRegistration': 'CE2012',
+      'specialCares': 'Mantener en refrigeración a menos de 10 grados centígrados',
+      'stock': 100,
+      'description': 'Leche de vaca descremada',
+      'urlImages': [
+        {
+          'url': 'https://merkazone.com/wp-content/uploads/2018/02/400x400-Leche-DESCREMADA.png',
+          'priority': 0
+        }
+      ],
+      'urlVideo': '',
+      'ingredients': [
+        {
+          'name': 'Leche',
+          'quantity': 100,
+          'quantityUnit': 'gramos'
+        }
+      ],
+      'nutritionalValues': [
+        {
+          'proportion': 100,
+          'name': 'leche',
+          'quantity': 100,
+          'percent': 100
+        }
+      ]
+    }
+  ]
+}
+
 export {
   getUsers,
   getUserById,
@@ -350,5 +426,7 @@ export {
   addPurchase,
   getPurchases,
   getClients,
-  getProviders
+  getProviders,
+  addProduct,
+  getProducts
 }
