@@ -62,6 +62,7 @@
     "remove-accents": "^0.4.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.1",
-    "semver-compare": "^1.0.0"
+    "semver-compare": "^1.0.0",
+    "serverless-apigw-binary": "git@github.com:rubenabix/serverless-apigw-binary"
   }
 }

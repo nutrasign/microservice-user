@@ -7,9 +7,16 @@ package:
 
 plugins:
   - serverless-webpack
+  - serverless-apigw-binary
   - serverless-offline
 
 custom:
+  apigwBinary:
+    types:
+    - 'image/jpeg'
+    - 'image/jpg'
+    - 'image/png'
+
   stage: ${opt:stage, self:provider.stage}
   webpack:
     webpackConfig: 'webpack.config.js' # Name of webpack configuration file

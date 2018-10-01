@@ -1,7 +1,8 @@
 import * as db from './../../db'
 import * as validators from './validators'
 import { encryptWithBcrypt, isValidHashWithBcrypt } from './../utils'
-import * as joi from 'joi'
+import cuid from 'cuid'
+import { uploadBinaryImage } from './../utils'
 
 const getUsers = async () => {
   const users = await db.executeQuery({
@@ -414,6 +415,27 @@ const getProducts = async ({input}) => {
   ]
 }
 
+const addImage = async ({image, contentType}) => {
+  if (!image || !contentType) {
+    return {
+      upload: false
+    }
+  }
+  console.log('image')
+  const upload = await uploadBinaryImage({
+    image,
+    contentType,
+    folderName: `${cuid()}${cuid()}`
+  })
+  if (upload.error) {
+    throw buildErrorResponse(errorCodes.general.INTERNAL_ERROR, upload.error)
+  }
+  return {
+    upload: true,
+    ...upload
+  }
+}
+
 export {
   getUsers,
   getUserById,
@@ -428,5 +450,6 @@ export {
   getClients,
   getProviders,
   addProduct,
-  getProducts
+  getProducts,
+  addImage
 }

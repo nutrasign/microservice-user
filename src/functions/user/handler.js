@@ -69,12 +69,20 @@ const collectionHandlers = {
     'GET': ({event}) => {
       return controller.getProducts({input: event.pathParameters})
     }
+  },
+  '/miscellaneous/add-image': {
+    'POST': ({event}) => {
+      return controller.addImage({
+        image: event.body,
+        contentType: event.headers['Content-Type'],
+      })
+    }
   }
 }
 
 const router = async (event, context, callback) => {
   console.log('debug event USER', util.inspect(event, {showHidden: false, depth: null}))
-  console.log('debug context USER', util.inspect(context, {showHidden: false, depth: null}))
+  // console.log('debug context USER', util.inspect(context, {showHidden: false, depth: null}))
   context.callbackWaitsForEmptyEventLoop = false
 
   if (event.source === 'serverless-plugin-warmup') {

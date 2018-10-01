@@ -65,3 +65,7 @@ functions:
           path: /products/{userId}
           method: get
           cors: true
+      - http:
+          path: /miscellaneous/add-image
+          method: post
+          cors: true

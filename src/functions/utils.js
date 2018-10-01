@@ -5,6 +5,44 @@ import AWS from 'aws-sdk'
 const ENV = process.env
 const REGION = ENV.REGION || 'eu-west-1'
 AWS.config.region = REGION
+const kycBucket = 'users-dev-images'
+const s3Bucket = new AWS.S3({params: {Bucket: kycBucket}})
+
+const uploadBinaryImage = async ({
+                                   folderName,
+                                   contentType,
+                                   image,
+                                   imagePrivate
+                                 }) => {
+  const extension = contentType.split('/')['1'] || 'png'
+  const timestamp = new Date().getTime()
+  const finalName = `${folderName}/${timestamp}.${extension}`
+  const data = {
+    Key: finalName,
+    Body: Buffer.from(image, 'base64'), // Buffer.from(image), // ,
+    ContentEncoding: 'base64',
+    ContentType: contentType,
+    ACL: imagePrivate ? 'private' : 'public-read'
+  }
+  try {
+    await s3Bucket.putObject(data).promise()
+    return {
+      key: finalName,
+      contentEncoding: 'base64',
+      contentType,
+      acl: 'public-read',
+      url: `https://s3-eu-west-1.amazonaws.com/${kycBucket}/${finalName}`
+    }
+  } catch (error) {
+    console.log(error)
+    console.log(`kycBucket ${kycBucket}`)
+    console.log('S3 ERROR', error.toString())
+    return {
+      url: `https://s3.amazonaws.com/${kycBucket}/${finalName}`,
+      error: error.toString()
+    }
+  }
+}
 
 const onResult = ({result, callback}) => {
   let response
@@ -106,5 +144,6 @@ export {
   encryptWithBcrypt,
   isValidHashWithBcrypt,
   maybeJSON,
-  getKeyFromSecretsManager
+  getKeyFromSecretsManager,
+  uploadBinaryImage
 }
