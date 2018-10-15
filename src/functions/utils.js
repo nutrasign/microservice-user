@@ -81,7 +81,7 @@ const onError = ({error = {}, options = {}, callback}) => {
     },
     statusCode: 400,
     body: JSON.stringify({
-      message: error.message || 'Internal error'
+      message: error.message || error.toString() || 'Internal error'
     })
   }
   callback(null, response)

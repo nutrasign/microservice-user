@@ -58,6 +58,7 @@
     "jsonfile": "^5.0.0",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.11",
+    "lodash.get": "^4.4.2",
     "moment": "^2.19.1",
     "remove-accents": "^0.4.1",
     "request": "^2.88.0",

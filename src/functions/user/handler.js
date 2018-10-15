@@ -1,6 +1,8 @@
 import * as util from 'util'
 import { onResult, onError, onInvalidRequest, maybeJSON } from './../utils'
 import * as controller from './controller'
+import get from 'lodash.get'
+import jwt from 'jsonwebtoken'
 
 const collectionHandlers = {
   '/users': {
@@ -80,6 +82,23 @@ const collectionHandlers = {
   }
 }
 
+const getAuth = ({event}) => {
+  const token = (get(event, 'headers.Authorization') || get(event, 'headers.authorization')).split(' ')[1]
+  if (!token) {
+    return {}
+  }
+  try {
+    console.log('DECODE', jwt.decode(token, process.env.TOKEN_SECRET))
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET, {
+      algorithm: process.env.SIGN_ALGORITHM
+    })
+    return Object.assign({}, decoded)
+  } catch (error) {
+    console.log(error)
+    throw new Error('Unauthorized')
+  }
+}
+
 const router = async (event, context, callback) => {
   console.log('debug event USER', util.inspect(event, {showHidden: false, depth: null}))
   // console.log('debug context USER', util.inspect(context, {showHidden: false, depth: null}))
@@ -96,7 +115,9 @@ const router = async (event, context, callback) => {
 
   if (collectionHandlers[resource][httpMethod]) {
     try {
-      const result = await collectionHandlers[resource][httpMethod]({event, context})
+      const auth = getAuth({event})
+      console.log(auth)
+      const result = await collectionHandlers[resource][httpMethod]({event, context, auth})
       return onResult({result, callback})
     } catch (error) {
       return onError({error, options: {requestId: context.awsRequestId}, callback})
