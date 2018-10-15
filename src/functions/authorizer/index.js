@@ -28,7 +28,7 @@ const handler = (event, context, callback) => {
   if (!event.authorizationToken) {
     return callback('Unauthorized')
   }
-  const token = event.authorizationToken
+  const token = event.authorizationToken.split(' ')[1]
   try {
     console.log('debug event', util.inspect(event, {showHidden: false, depth: null}))
     console.log('TOKEN', token)
