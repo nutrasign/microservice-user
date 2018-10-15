@@ -12,24 +12,24 @@ functions:
     events:
     - http:
         path: /users
-        method: get
-        cors: true
-    - http:
-        path: /users
         method: post
         cors: true
-    - http:
-        path: /user/{id}
-        method: get
-        cors: true
-    - http:
-        path: /user/{id}
-        method: put
-        cors: true
-    - http:
-        path: /user/{id}
-        method: delete
-        cors: true
+#    - http:
+#        path: /user/{id}
+#        method: get
+#        cors: true
+#    - http:
+#        path: /user/{id}
+#        method: put
+#        cors: true
+#    - http:
+#        path: /user/{id}
+#        method: delete
+#        cors: true
+#    - http:
+#        path: /users
+#        method: get
+#        cors: true
     - http:
         path: /login
         method: post
@@ -59,6 +59,13 @@ functions:
           name: Authorizer
           resultTtlInSeconds: 0
     - http:
+        path: /purchases
+        method: get
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
         path: /clients
         method: post
         cors: true
@@ -66,14 +73,7 @@ functions:
           name: Authorizer
           resultTtlInSeconds: 0
     - http:
-        path: /purchases/{userId}
-        method: get
-        cors: true
-        authorizer:
-          name: Authorizer
-          resultTtlInSeconds: 0
-    - http:
-        path: /clients/{userId}
+        path: /clients
         method: get
         cors: true
         authorizer:
@@ -87,7 +87,7 @@ functions:
           name: Authorizer
           resultTtlInSeconds: 0
     - http:
-        path: /products/{userId}
+        path: /products
         method: get
         cors: true
         authorizer:

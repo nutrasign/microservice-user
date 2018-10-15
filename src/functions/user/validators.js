@@ -60,7 +60,6 @@ const login = (input) => {
 }
 
 const schemaAddProvider = joi.object().keys({
-  userId: joi.string().required().trim(),
   name: joi.string().required().trim(),
   code: joi.string().required().trim(),
   address: joi.string().required().trim(),
@@ -88,7 +87,6 @@ const addProvider = (input) => {
 }
 
 const schemaAddClient = joi.object().keys({
-  userId: joi.string().required().trim(),
   name: joi.string().required().trim(),
   code: joi.string().required().trim(),
   address: joi.string().required().trim(),
@@ -116,7 +114,6 @@ const addClient = (input) => {
 }
 
 const schemaAddPurchase = joi.object().keys({
-  userId: joi.string().required().trim(),
   providerName: joi.string().required().trim(),
   documentDate: joi.string().required().trim(),
   documentType: joi.string().required().trim(),
@@ -137,7 +134,6 @@ const addPurchase = (input) => {
 }
 
 const schemaAddProduct = joi.object().keys({
-  userId: joi.string().required().trim(),
   name: joi.string().required().trim(),
   barcode: joi.string().required().trim(),
   sanitaryRegistration: joi.string().optional().trim().allow('').default(''),

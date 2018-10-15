@@ -41,33 +41,27 @@ const collectionHandlers = {
     }
   },
   '/clients': {
-    'POST': ({event}) => {
-      return controller.addClient({input: event.body})
+    'POST': ({event, auth}) => {
+      return controller.addClient({input: event.body, auth})
+    },
+    'GET': ({event, auth}) => {
+      return controller.getClients({input: event.pathParameters, auth})
     }
   },
   '/purchases': {
-    'POST': ({event}) => {
-      return controller.addPurchase({input: event.body})
+    'POST': ({event, auth}) => {
+      return controller.addPurchase({input: event.body, auth})
+    },
+    'GET': ({event, auth}) => {
+      return controller.getPurchases({input: event.pathParameters, auth})
     }
   },
   '/products': {
-    'POST': ({event}) => {
-      return controller.addProduct({input: event.body})
-    }
-  },
-  '/clients/{userId}': {
-    'GET': ({event}) => {
-      return controller.getClients({input: event.pathParameters})
-    }
-  },
-  '/purchases/{userId}': {
-    'GET': ({event}) => {
-      return controller.getPurchases({input: event.pathParameters})
-    }
-  },
-  '/products/{userId}': {
-    'GET': ({event}) => {
-      return controller.getProducts({input: event.pathParameters})
+    'POST': ({event, auth}) => {
+      return controller.addProduct({input: event.body, auth})
+    },
+    'GET': ({event, auth}) => {
+      return controller.getProducts({input: event.pathParameters, auth})
     }
   },
   '/miscellaneous/add-image': {
@@ -81,10 +75,11 @@ const collectionHandlers = {
 }
 
 const getAuth = ({event}) => {
-  const token = (get(event, 'headers.Authorization') || get(event, 'headers.authorization')).split(' ')[1]
+  let token = (get(event, 'headers.Authorization') || get(event, 'headers.authorization'))
   if (!token) {
     return {}
   }
+  token = token.split(' ')[1]
   try {
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET, {
       algorithm: process.env.SIGN_ALGORITHM

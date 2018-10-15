@@ -206,164 +206,89 @@ const addProvider = async ({input, auth}) => {
   }
 }
 
-const addClient = async ({input}) => {
+const addClient = async ({input, auth}) => {
   const {error, value: params} = validators.addClient(input)
   if (error) {
     throw error
   }
-  const {
-    name,
-    code,
-    address,
-    postalCode,
-    city,
-    country,
-    commercialContactName,
-    commercialContactRol,
-    commercialContactEmail,
-    commercialContactPhone,
-    emergencyContactName,
-    emergencyContactRol,
-    emergencyContactEmail,
-    emergencyContactPhone,
-    certificates
-  } = params
+
+  const {sub: internalUserId} = auth
+
+  const client = await db.executeQuery({
+    resource: '/addClient',
+    input: {
+      internalUserId,
+      client: params
+    }
+  })
+
   return {
-    name,
-    code,
-    address,
-    postalCode,
-    city,
-    country,
-    commercialContactName,
-    commercialContactRol,
-    commercialContactEmail,
-    commercialContactPhone,
-    emergencyContactName,
-    emergencyContactRol,
-    emergencyContactEmail,
-    emergencyContactPhone,
-    certificates
+    ...client
   }
 }
 
-const addPurchase = async ({input}) => {
+const addPurchase = async ({input, auth}) => {
   const {error, value: params} = validators.addPurchase(input)
   if (error) {
     throw error
   }
-  const {
-    userId,
-    providerName,
-    showProvider,
-    documentDate,
-    documentType,
-    documentNumber,
-    products
-  } = params
+
+  const {sub: internalUserId} = auth
+
+  const purchase = await db.executeQuery({
+    resource: '/addPurchase',
+    input: {
+      internalUserId,
+      purchase: params
+    }
+  })
+
   return {
-    userId,
-    showProvider,
-    providerName,
-    documentDate,
-    documentType,
-    documentNumber,
-    products
+    ...purchase
   }
 }
 
-const addProduct = async ({input}) => {
+const addProduct = async ({input, auth}) => {
   const {error, value: params} = validators.addProduct(input)
   if (error) {
     throw error
   }
-  const {
-    userId,
-    name,
-    barcode,
-    sanitaryRegistration,
-    specialCares,
-    stock,
-    description,
-    urlImages,
-    urlVideo,
-    ingredients,
-    nutritionalValues
-  } = params
+
+  const {sub: internalUserId} = auth
+
+  const product = await db.executeQuery({
+    resource: '/addProduct',
+    input: {
+      internalUserId,
+      product: params
+    }
+  })
+
   return {
-    userId,
-    name,
-    barcode,
-    sanitaryRegistration,
-    specialCares,
-    stock,
-    description,
-    urlImages,
-    urlVideo,
-    ingredients,
-    nutritionalValues
+    ...product
   }
 }
 
-const getPurchases = async ({input}) => {
-  const {error, value: params} = validators.getByUserId(input)
-  if (error) {
-    throw error
-  }
-  const {
-    userId,
-  } = params
-  return [
-    {
-      'providerName': 'Coca Cola',
-      'documentDate': '31-10-2018',
-      'documentType': 'PRE',
-      'documentNumber': '1234',
-      'products': [
-        {
-          'name': 'Tomate',
-          'expirationDate': '31-10-2018',
-          'barcode': '123456789',
-          'quantity': 10,
-          'price': 2000
-        }
-      ]
+const getPurchases = async ({auth}) => {
+  const {sub: internalUserId} = auth
+  const purchases = await db.executeQuery({
+    resource: '/getProviders',
+    input: {
+      internalUserId
     }
-  ]
+  })
+  return purchases
 }
 
-const getClients = async ({input}) => {
-  const {error, value: params} = validators.getByUserId(input)
-  if (error) {
-    throw error
-  }
-  const {
-    userId,
-  } = params
-  return [
-    {
-      'name': 'Coca Cola',
-      'code': '12345',
-      'address': 'Rivas',
-      'postalCode': '12345',
-      'city': 'SJ',
-      'country': 'CR',
-      'commercialContactName': '',
-      'commercialContactRol': '',
-      'commercialContactEmail': '',
-      'commercialContactPhone': '',
-      'emergencyContactName': '',
-      'emergencyContactRol': '',
-      'emergencyContactEmail': '',
-      'emergencyContactPhone': '',
-      'certificates': [
-        {
-          'name': 'ISO-2000',
-          'number': '1234567'
-        }
-      ]
+const getClients = async ({auth}) => {
+  const {sub: internalUserId} = auth
+  const clients = await db.executeQuery({
+    resource: '/getClients',
+    input: {
+      internalUserId
     }
-  ]
+  })
+  return clients
 }
 
 const getProviders = async ({auth}) => {
@@ -377,47 +302,15 @@ const getProviders = async ({auth}) => {
   return providers
 }
 
-const getProducts = async ({input}) => {
-  const {error, value: params} = validators.getByUserId(input)
-  if (error) {
-    throw error
-  }
-  const {
-    userId,
-  } = params
-  return [
-    {
-      'userId': 'ABC',
-      'name': 'Leche Descremada',
-      'barcode': '123456789',
-      'sanitaryRegistration': 'CE2012',
-      'specialCares': 'Mantener en refrigeración a menos de 10 grados centígrados',
-      'stock': 100,
-      'description': 'Leche de vaca descremada',
-      'urlImages': [
-        {
-          'url': 'https://merkazone.com/wp-content/uploads/2018/02/400x400-Leche-DESCREMADA.png',
-          'priority': 0
-        }
-      ],
-      'urlVideo': '',
-      'ingredients': [
-        {
-          'name': 'Leche',
-          'quantity': 100,
-          'quantityUnit': 'gramos'
-        }
-      ],
-      'nutritionalValues': [
-        {
-          'proportion': 100,
-          'name': 'leche',
-          'quantity': 100,
-          'percent': 100
-        }
-      ]
+const getProducts = async ({auth}) => {
+  const {sub: internalUserId} = auth
+  const products = await db.executeQuery({
+    resource: '/getProducts',
+    input: {
+      internalUserId
     }
-  ]
+  })
+  return products
 }
 
 const addImage = async ({image, contentType}) => {

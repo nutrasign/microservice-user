@@ -16,15 +16,6 @@ const getRedisClient = async () => {
 
     let config = await getKeyFromSecretsManager({secretName})
     config = maybeJSON(config)
-
-    console.log('CREATE REDIS CLIENT', {
-      host: config.REDIS_HOST,
-      port: config.REDIS_PORT,
-      password: config.REDIS_PASSWORD,
-      showFriendlyErrorStack: true,
-      db: 0,
-      keyPrefix: 'NS_'
-    })
     globalRedisInstance = new Redis({
       host: config.REDIS_HOST,
       port: config.REDIS_PORT,
@@ -173,16 +164,87 @@ const getUsers = async () => {
 
 const addProvider = async ({
                              internalUserId,
-                             provider
+                             provider: values
                            }) => {
   try {
     const id = cuid()
     const redisInstance = await getRedisClient()
-    await redisInstance.hset([`PROVIDERS:${internalUserId}`, id, JSON.stringify(provider)])
-    return {
+    const finalValue = {
       id,
-      ...provider
+      ...values
     }
+    await redisInstance.hset([`PROVIDERS:${internalUserId}`, id, JSON.stringify(finalValue)])
+    return finalValue
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const addPurchase = async ({
+                             internalUserId,
+                             purchase: values
+                           }) => {
+  try {
+    const id = cuid()
+    const redisInstance = await getRedisClient()
+    const finalValue = {
+      id,
+      ...values
+    }
+    await redisInstance.hset([`PURCHASES:${internalUserId}`, id, JSON.stringify(finalValue)])
+    return finalValue
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const addProduct = async ({
+                            internalUserId,
+                            product: values
+                          }) => {
+  try {
+    const id = cuid()
+    const redisInstance = await getRedisClient()
+    const finalValue = {
+      id,
+      ...values
+    }
+    await redisInstance.hset([`PRODUCTS:${internalUserId}`, id, JSON.stringify(finalValue)])
+    return finalValue
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const getPurchases = async ({
+                              internalUserId
+                            }) => {
+  try {
+    const redisInstance = await getRedisClient()
+    const values = await redisInstance.hvals([`PURCHASES:${internalUserId}`])
+
+    return values.map((value) => {
+      return JSON.parse(value)
+    })
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const getProducts = async ({
+                             internalUserId
+                           }) => {
+  try {
+    const redisInstance = await getRedisClient()
+    const values = await redisInstance.hvals([`PRODUCTS:${internalUserId}`])
+
+    return values.map((value) => {
+      return JSON.parse(value)
+    })
   } catch (error) {
     console.error(error)
     throw error
@@ -194,10 +256,45 @@ const getProviders = async ({
                             }) => {
   try {
     const redisInstance = await getRedisClient()
-    const rowProviders = await redisInstance.hvals([`PROVIDERS:${internalUserId}`])
+    const values = await redisInstance.hvals([`PROVIDERS:${internalUserId}`])
 
-    return rowProviders.map((provider) => {
-      return JSON.parse(provider)
+    return values.map((value) => {
+      return JSON.parse(value)
+    })
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const addClient = async ({
+                           internalUserId,
+                           client: values
+                         }) => {
+  try {
+    const id = cuid()
+    const redisInstance = await getRedisClient()
+    const finalValue = {
+      id,
+      ...values
+    }
+    await redisInstance.hset([`CLIENTS:${internalUserId}`, id, JSON.stringify(finalValue)])
+    return finalValue
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const getClients = async ({
+                            internalUserId
+                          }) => {
+  try {
+    const redisInstance = await getRedisClient()
+    const values = await redisInstance.hvals([`CLIENTS:${internalUserId}`])
+
+    return values.map((value) => {
+      return JSON.parse(value)
     })
   } catch (error) {
     console.error(error)
@@ -213,7 +310,13 @@ const collectionHandlers = {
   '/getUsers': getUsers,
   '/getUserCredentialsByEmail': getUserCredentialsByEmail,
   '/addProvider': addProvider,
-  '/getProviders': getProviders
+  '/getProviders': getProviders,
+  '/addPurchase': addPurchase,
+  '/getPurchases': getPurchases,
+  '/addProduct': addProduct,
+  '/getProducts': getProducts,
+  '/addClient': addClient,
+  '/getClients': getClients
 }
 
 const isDisconnection = (error) => {
