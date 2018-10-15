@@ -3,12 +3,12 @@ service: USERS
 package:
   individually: true
   exclude:
-    - aws-sdk
+  - aws-sdk
 
 plugins:
-  - serverless-webpack
-  - serverless-apigw-binary
-  - serverless-offline
+- serverless-webpack
+- serverless-apigw-binary
+- serverless-offline
 
 custom:
   apigwBinary:
@@ -37,10 +37,33 @@ provider:
   # vpc: ${file(config-${self:custom.stage}.yml):vpc}
 
   iamRoleStatements:
-    - Effect: Allow
-      Action:
-       -
-         "*"
-      Resource: "*"
+  - Effect: Allow
+    Action:
+    - "*"
+    Resource: "*"
 
 functions: ${file(functions-${self:custom.stage}.yml):functions}
+
+resources:
+  Resources:
+    # This response is needed for custom authorizer failures cors support ¯\_(ツ)_/¯
+    GatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: EXPIRED_TOKEN
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'
+    AuthFailureGatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: UNAUTHORIZED
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'

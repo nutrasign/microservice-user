@@ -80,7 +80,9 @@ const onError = ({error = {}, options = {}, callback}) => {
       'Access-Control-Allow-Credentials': true // Required for cookies, authorization headers with HTTPS
     },
     statusCode: 400,
-    body: JSON.stringify(error)
+    body: JSON.stringify({
+      message: error.message || 'Internal error'
+    })
   }
   callback(null, response)
 }

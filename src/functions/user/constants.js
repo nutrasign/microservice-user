@@ -1,0 +1,5 @@
+const USER_STATUS_ACTIVE = '1'
+
+export {
+  USER_STATUS_ACTIVE
+}

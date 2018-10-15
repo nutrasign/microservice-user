@@ -6,66 +6,100 @@ functions:
         path: /
         method: get
         cors: true
+
+  Auth:
+    handler: src/functions/user/handler.router
+    events:
+    - http:
+        path: /users
+        method: get
+        cors: true
+    - http:
+        path: /users
+        method: post
+        cors: true
+    - http:
+        path: /user/{id}
+        method: get
+        cors: true
+    - http:
+        path: /user/{id}
+        method: put
+        cors: true
+    - http:
+        path: /user/{id}
+        method: delete
+        cors: true
+    - http:
+        path: /login
+        method: post
+        cors: true
   Users:
     handler: src/functions/user/handler.router
     events:
-      - http:
-          path: /users
-          method: get
-          cors: true
-      - http:
-          path: /users
-          method: post
-          cors: true
-      - http:
-          path: /user/{id}
-          method: get
-          cors: true
-      - http:
-          path: /user/{id}
-          method: put
-          cors: true
-      - http:
-          path: /user/{id}
-          method: delete
-          cors: true
-      - http:
-          path: /login
-          method: post
-          cors: true
-      - http:
-          path: /providers
-          method: post
-          cors: true
-      - http:
-          path: /purchases
-          method: post
-          cors: true
-      - http:
-          path: /clients
-          method: post
-          cors: true
-      - http:
-          path: /providers/{userId}
-          method: get
-          cors: true
-      - http:
-          path: /purchases/{userId}
-          method: get
-          cors: true
-      - http:
-          path: /clients/{userId}
-          method: get
-          cors: true
-      - http:
-          path: /products
-          method: POST
-          cors: true
-      - http:
-          path: /products/{userId}
-          method: get
-          cors: true
-      - http:
-          path: /miscellaneous/add-image
-          method: post
-          cors: true
+    - http:
+        path: /providers
+        method: post
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /purchases
+        method: post
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /clients
+        method: post
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /providers/{userId}
+        method: get
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /purchases/{userId}
+        method: get
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /clients/{userId}
+        method: get
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /products
+        method: POST
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /products/{userId}
+        method: get
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
+        path: /miscellaneous/add-image
+        method: post
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+  Authorizer:
+    cors: true
+    handler: src/functions/authorizer/index.handler

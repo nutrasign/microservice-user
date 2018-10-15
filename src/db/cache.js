@@ -44,13 +44,14 @@ const addUser = async ({
                          name,
                          role,
                          company,
-                         description
+                         description,
+                         status
                        }) => {
   try {
     const id = cuid()
     const client = await getClient()
-    await client.hset(['AUTH:USERNAME', username, `${hashedPassword}:${id}:1`])
-    await client.hset(['AUTH:EMAIL', email, `${hashedPassword}:${id}:1`])
+    await client.hset(['AUTH:USERNAME', username, `${hashedPassword}:${id}:${status}`])
+    await client.hset(['AUTH:EMAIL', email, `${hashedPassword}:${id}:${status}`])
     await client.hset(['USERS', id, JSON.stringify({
       id,
       username,
@@ -59,7 +60,7 @@ const addUser = async ({
       role,
       company,
       description,
-      status: 1
+      status
     })])
     return {
       id,
@@ -69,7 +70,7 @@ const addUser = async ({
       role,
       company,
       description,
-      status: 1
+      status
     }
   } catch (error) {
     console.error(error)
@@ -98,13 +99,12 @@ const deleteUserById = async ({
   }
 }
 
-const getUserByEmail = async ({
-                             email
-                           }) => {
+const getUserCredentialsByEmail = async ({
+                                email
+                              }) => {
   try {
     const client = await getClient()
-    const user = await client.hget(['AUTH:EMAIL', email])
-    return user ? JSON.parse(user) : undefined
+    return client.hget(['AUTH:EMAIL', email])
   } catch (error) {
     console.error(error)
     throw error
@@ -177,7 +177,7 @@ const collectionHandlers = {
   '/updateUserById': updateUserById,
   '/getUserById': getUserById,
   '/getUsers': getUsers,
-  '/getUserByEmail': getUserByEmail
+  '/getUserCredentialsByEmail': getUserCredentialsByEmail
 }
 
 const isDisconnection = (error) => {

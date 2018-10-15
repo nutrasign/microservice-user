@@ -3,6 +3,8 @@ import * as validators from './validators'
 import { encryptWithBcrypt, isValidHashWithBcrypt } from './../utils'
 import cuid from 'cuid'
 import { uploadBinaryImage } from './../utils'
+import { USER_STATUS_ACTIVE } from './constants'
+import jwt from 'jsonwebtoken'
 
 const getUsers = async () => {
   const users = await db.executeQuery({
@@ -50,6 +52,27 @@ const updateUserById = async ({input}) => {
   return user
 }
 
+const getToken = ({internalUserId}) => {
+  const token = jwt.sign(
+    {
+      sub: internalUserId,
+      data: {
+        internalUserId,
+        internalSessionId: cuid(),
+        allow: {},
+        env: {
+          stage: process.env.STAGE,
+          region: process.env.REGION
+        }
+      }
+    },
+    process.env.TOKEN_SECRET, {
+      expiresIn: process.env.SESSION_EXPIRATION,
+      algorithm: process.env.SIGN_ALGORITHM
+    })
+  return token
+}
+
 const addUser = async ({input}) => {
   const {error, value: params} = validators.validateUser(input)
   if (error) {
@@ -66,7 +89,18 @@ const addUser = async ({input}) => {
   } = params
 
   const {salt, hash: hashedPassword} = encryptWithBcrypt({plainText: password})
-  // TODO: don`t allow email, username taken
+
+  const userCredentials = await db.executeQuery({
+    resource: '/getUserCredentialsByEmail',
+    input: {
+      email
+    }
+  })
+
+  if (userCredentials) {
+    throw Error('Email taken')
+  }
+
   const {id} = await db.executeQuery({
     resource: '/addUser',
     input: {
@@ -77,7 +111,8 @@ const addUser = async ({input}) => {
       company,
       description,
       hashedPassword,
-      salt
+      salt,
+      status: USER_STATUS_ACTIVE
     }
   })
   return {
@@ -101,26 +136,39 @@ const login = async ({input}) => {
     password
   } = params
 
-  // const user = await db.executeQuery({
-  //   resource: '/getUserByEmail',
-  //   input: {
-  //     email
-  //   }
-  // })
-  //
-  // console.log('USER', user)
-  //
-  // if (!user) {
-  //   throw new Error('Invalid User')
-  // }
-  //
-  // const isPasswordCorrect = isValidHashWithBcrypt({originalValue: password, hash: user.hashedPassword})
-  // if (!isPasswordCorrect) {
-  //   throw new Error('Invalid Password')
-  // }
+  const userCredentials = await db.executeQuery({
+    resource: '/getUserCredentialsByEmail',
+    input: {
+      email
+    }
+  })
+
+  console.log('USER', userCredentials)
+
+  if (!userCredentials) {
+    throw new Error('Invalid User')
+  }
+
+  const [hashedPassword, internalUserId, userStatus] = userCredentials.split(':')
+
+  if (userStatus !== USER_STATUS_ACTIVE) {
+    throw new Error('Invalid user status')
+  }
+
+  const isPasswordCorrect = isValidHashWithBcrypt({originalValue: password, hash: hashedPassword})
+  if (!isPasswordCorrect) {
+    throw new Error('Invalid Password')
+  }
+
+  const token = getToken({internalUserId})
 
   return {
-    id: 'cjmoxvqhj0001pp4iznypqptd'
+    userData: {},
+    idToken: token,
+    refreshToken: token, // TODO: implement?
+    accessToken: token, // TODO: implement?
+    accessTokenExpiresAt: 0, // TODO: implement?
+    idTokenExpiresAt: 0 // TODO: implement?
   }
 }
 

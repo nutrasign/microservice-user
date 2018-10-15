@@ -3,3 +3,6 @@ environment:
   REGION: ${opt:region, self:provider.region}
   APP: 'nutrasign'
   PASSWORD_LENGTH: '4'
+  SESSION_EXPIRATION: '1h'
+  SIGN_ALGORITHM: 'HS512'
+  TOKEN_SECRET: 'nutrasign'
