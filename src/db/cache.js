@@ -2,10 +2,10 @@ import Redis from 'ioredis'
 import cuid from 'cuid'
 import { getKeyFromSecretsManager, maybeJSON } from '../functions/utils'
 
-let client
+let globalRedisInstance
 
-const getClient = async () => {
-  if (!client) {
+const getRedisClient = async () => {
+  if (!globalRedisInstance) {
 
     if (!process.env.STAGE || !process.env.APP) {
       throw new Error('STAGE or APP is not SET, can\'t initialize db')
@@ -25,7 +25,7 @@ const getClient = async () => {
       db: 0,
       keyPrefix: 'NS_'
     })
-    client = new Redis({
+    globalRedisInstance = new Redis({
       host: config.REDIS_HOST,
       port: config.REDIS_PORT,
       password: config.REDIS_PASSWORD,
@@ -34,7 +34,7 @@ const getClient = async () => {
       keyPrefix: 'NS_'
     })
   }
-  return client
+  return globalRedisInstance
 }
 
 const addUser = async ({
@@ -49,10 +49,10 @@ const addUser = async ({
                        }) => {
   try {
     const id = cuid()
-    const client = await getClient()
-    await client.hset(['AUTH:USERNAME', username, `${hashedPassword}:${id}:${status}`])
-    await client.hset(['AUTH:EMAIL', email, `${hashedPassword}:${id}:${status}`])
-    await client.hset(['USERS', id, JSON.stringify({
+    const redisInstance = await getRedisClient()
+    await redisInstance.hset(['AUTH:USERNAME', username, `${hashedPassword}:${id}:${status}`])
+    await redisInstance.hset(['AUTH:EMAIL', email, `${hashedPassword}:${id}:${status}`])
+    await redisInstance.hset(['USERS', id, JSON.stringify({
       id,
       username,
       hashedPassword,
@@ -82,15 +82,15 @@ const deleteUserById = async ({
                                 id
                               }) => {
   try {
-    const client = await getClient()
-    let user = await client.hget(['USERS', id])
+    const redisInstance = await getRedisClient()
+    let user = await redisInstance.hget(['USERS', id])
     if (user) {
       user = JSON.parse(user)
       user.status = 0
       const {username, email, hashedPassword} = user
-      await client.hset(['AUTH:USERNAME', username, `${hashedPassword}:${id}:0`])
-      await client.hset(['AUTH:EMAIL', email, `${hashedPassword}:${id}:0`])
-      await client.hset(['USERS', id, JSON.stringify(user)])
+      await redisInstance.hset(['AUTH:USERNAME', username, `${hashedPassword}:${id}:0`])
+      await redisInstance.hset(['AUTH:EMAIL', email, `${hashedPassword}:${id}:0`])
+      await redisInstance.hset(['USERS', id, JSON.stringify(user)])
       return user
     }
   } catch (error) {
@@ -100,11 +100,11 @@ const deleteUserById = async ({
 }
 
 const getUserCredentialsByEmail = async ({
-                                email
-                              }) => {
+                                           email
+                                         }) => {
   try {
-    const client = await getClient()
-    return client.hget(['AUTH:EMAIL', email])
+    const redisInstance = await getRedisClient()
+    return redisInstance.hget(['AUTH:EMAIL', email])
   } catch (error) {
     console.error(error)
     throw error
@@ -115,8 +115,8 @@ const getUserById = async ({
                              id
                            }) => {
   try {
-    const client = await getClient()
-    const user = await client.hget(['USERS', id])
+    const redisInstance = await getRedisClient()
+    const user = await redisInstance.hget(['USERS', id])
     return user ? JSON.parse(user) : undefined
   } catch (error) {
     console.error(error)
@@ -132,15 +132,15 @@ const updateUserById = async ({
                                 description
                               }) => {
   try {
-    const client = await getClient()
-    let user = await client.hget(['USERS', id])
+    const redisInstance = await getRedisClient()
+    let user = await redisInstance.hget(['USERS', id])
     if (user) {
       user = JSON.parse(user)
       user.name = name || user.name
       user.role = role || user.role
       user.company = company || user.company
       user.description = description || user.description
-      await client.hset(['USERS', id, JSON.stringify(user)])
+      await redisInstance.hset(['USERS', id, JSON.stringify(user)])
     }
     return user
   } catch (error) {
@@ -152,8 +152,8 @@ const updateUserById = async ({
 const getUsers = async () => {
   try {
     let users = []
-    const client = await getClient()
-    const rowUsers = await client.hvals(['USERS'])
+    const redisInstance = await getRedisClient()
+    const rowUsers = await redisInstance.hvals(['USERS'])
     if (!rowUsers || !rowUsers.length) {
       return users
     }
@@ -171,13 +171,49 @@ const getUsers = async () => {
   }
 }
 
+const addProvider = async ({
+                             internalUserId,
+                             provider
+                           }) => {
+  try {
+    const id = cuid()
+    const redisInstance = await getRedisClient()
+    await redisInstance.hset([`PROVIDERS:${internalUserId}`, id, JSON.stringify(provider)])
+    return {
+      id,
+      ...provider
+    }
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const getProviders = async ({
+                              internalUserId
+                            }) => {
+  try {
+    const redisInstance = await getRedisClient()
+    const rowProviders = await redisInstance.hvals([`PROVIDERS:${internalUserId}`])
+
+    return rowProviders.map((provider) => {
+      return JSON.parse(provider)
+    })
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 const collectionHandlers = {
   '/addUser': addUser,
   '/deleteUserById': deleteUserById,
   '/updateUserById': updateUserById,
   '/getUserById': getUserById,
   '/getUsers': getUsers,
-  '/getUserCredentialsByEmail': getUserCredentialsByEmail
+  '/getUserCredentialsByEmail': getUserCredentialsByEmail,
+  '/addProvider': addProvider,
+  '/getProviders': getProviders
 }
 
 const isDisconnection = (error) => {
@@ -189,7 +225,7 @@ const isDisconnection = (error) => {
 
 const resetRedisClient = async () => {
   console.log('resetRedisClient')
-  client = undefined
+  globalRedisInstance = undefined
 }
 
 const execute = async ({payload}) => {

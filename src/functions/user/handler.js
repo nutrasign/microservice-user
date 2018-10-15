@@ -33,8 +33,11 @@ const collectionHandlers = {
     }
   },
   '/providers': {
-    'POST': ({event}) => {
-      return controller.addProvider({input: event.body})
+    'POST': ({event, auth}) => {
+      return controller.addProvider({input: event.body, auth})
+    },
+    'GET': ({event, auth}) => {
+      return controller.getProviders({input: event.pathParameters, auth})
     }
   },
   '/clients': {
@@ -50,11 +53,6 @@ const collectionHandlers = {
   '/products': {
     'POST': ({event}) => {
       return controller.addProduct({input: event.body})
-    }
-  },
-  '/providers/{userId}': {
-    'GET': ({event}) => {
-      return controller.getProviders({input: event.pathParameters})
     }
   },
   '/clients/{userId}': {
@@ -88,7 +86,6 @@ const getAuth = ({event}) => {
     return {}
   }
   try {
-    console.log('DECODE', jwt.decode(token, process.env.TOKEN_SECRET))
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET, {
       algorithm: process.env.SIGN_ALGORITHM
     })

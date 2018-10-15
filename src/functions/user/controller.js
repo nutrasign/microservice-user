@@ -185,44 +185,24 @@ const deleteUserById = async ({input}) => {
   return user
 }
 
-const addProvider = async ({input}) => {
+const addProvider = async ({input, auth}) => {
   const {error, value: params} = validators.addProvider(input)
   if (error) {
     throw error
   }
-  const {
-    name,
-    code,
-    address,
-    postalCode,
-    city,
-    country,
-    commercialContactName,
-    commercialContactRol,
-    commercialContactEmail,
-    commercialContactPhone,
-    emergencyContactName,
-    emergencyContactRol,
-    emergencyContactEmail,
-    emergencyContactPhone,
-    certificates
-  } = params
+
+  const {sub: internalUserId} = auth
+
+  const provider = await db.executeQuery({
+    resource: '/addProvider',
+    input: {
+      internalUserId,
+      provider: params
+    }
+  })
+
   return {
-    name,
-    code,
-    address,
-    postalCode,
-    city,
-    country,
-    commercialContactName,
-    commercialContactRol,
-    commercialContactEmail,
-    commercialContactPhone,
-    emergencyContactName,
-    emergencyContactRol,
-    emergencyContactEmail,
-    emergencyContactPhone,
-    certificates
+    ...provider
   }
 }
 
@@ -386,38 +366,15 @@ const getClients = async ({input}) => {
   ]
 }
 
-const getProviders = async ({input}) => {
-  const {error, value: params} = validators.getByUserId(input)
-  if (error) {
-    throw error
-  }
-  const {
-    userId,
-  } = params
-  return [
-    {
-      'name': 'Coca Cola',
-      'code': '12345',
-      'address': 'Rivas',
-      'postalCode': '12345',
-      'city': 'SJ',
-      'country': 'CR',
-      'commercialContactName': '',
-      'commercialContactRol': '',
-      'commercialContactEmail': '',
-      'commercialContactPhone': '',
-      'emergencyContactName': '',
-      'emergencyContactRol': '',
-      'emergencyContactEmail': '',
-      'emergencyContactPhone': '',
-      'certificates': [
-        {
-          'name': 'ISO-2000',
-          'number': '1234567'
-        }
-      ]
+const getProviders = async ({auth}) => {
+  const {sub: internalUserId} = auth
+  const providers = await db.executeQuery({
+    resource: '/getProviders',
+    input: {
+      internalUserId
     }
-  ]
+  })
+  return providers
 }
 
 const getProducts = async ({input}) => {

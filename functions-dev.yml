@@ -45,6 +45,13 @@ functions:
           name: Authorizer
           resultTtlInSeconds: 0
     - http:
+        path: /providers
+        method: get
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
         path: /purchases
         method: post
         cors: true
@@ -54,13 +61,6 @@ functions:
     - http:
         path: /clients
         method: post
-        cors: true
-        authorizer:
-          name: Authorizer
-          resultTtlInSeconds: 0
-    - http:
-        path: /providers/{userId}
-        method: get
         cors: true
         authorizer:
           name: Authorizer
