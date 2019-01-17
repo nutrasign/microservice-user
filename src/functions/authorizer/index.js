@@ -33,9 +33,17 @@ const handler = (event, context, callback) => {
     console.log('debug event', util.inspect(event, {showHidden: false, depth: null}))
     console.log('TOKEN', token)
     console.log('DECODE', jwt.decode(token, process.env.TOKEN_SECRET))
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET, {
-      algorithm: process.env.SIGN_ALGORITHM
-    })
+
+    let decoded
+    if (process.env.AWS_SESSION_TOKEN) {
+      decoded = jwt.verify(token, process.env.TOKEN_SECRET, {
+        algorithm: process.env.SIGN_ALGORITHM
+      })
+    } else {
+      decoded = jwt.decode(token, process.env.TOKEN_SECRET, {
+        algorithm: process.env.SIGN_ALGORITHM
+      })
+    }
     console.log('AUTH OK')
     return callback(null, generatePolicy(decoded.sub, 'Allow', event.methodArn))
   } catch (error) {

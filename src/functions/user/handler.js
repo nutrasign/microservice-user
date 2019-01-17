@@ -64,6 +64,17 @@ const collectionHandlers = {
       return controller.getProducts({input: event.pathParameters, auth})
     }
   },
+  '/animals/birth': {
+    'POST': ({event, auth}) => {
+      return controller.addBirth({input: event.body, auth})
+    },
+    'GET': ({event, auth}) => {
+      return controller.getBirths({input: event.pathParameters, auth})
+    },
+    'DELETE': ({event, auth}) => {
+      return controller.deleteBirth({input: event.body, auth})
+    }
+  },
   '/miscellaneous/add-image': {
     'POST': ({event}) => {
       return controller.addImage({
@@ -81,9 +92,16 @@ const getAuth = ({event}) => {
   }
   token = token.split(' ')[1]
   try {
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET, {
-      algorithm: process.env.SIGN_ALGORITHM
-    })
+    let decoded
+    if (process.env.AWS_SESSION_TOKEN) {
+      decoded = jwt.verify(token, process.env.TOKEN_SECRET, {
+        algorithm: process.env.SIGN_ALGORITHM
+      })
+    } else {
+      decoded = jwt.decode(token, process.env.TOKEN_SECRET, {
+        algorithm: process.env.SIGN_ALGORITHM
+      })
+    }
     return Object.assign({}, decoded)
   } catch (error) {
     console.log(error)

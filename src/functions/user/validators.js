@@ -59,6 +59,10 @@ const login = (input) => {
   return joi.validate(input, schemaLogin)
 }
 
+const addProvider = (input) => {
+  return joi.validate(input, schemaAddProvider)
+}
+
 const schemaAddProvider = joi.object().keys({
   name: joi.string().required().trim(),
   code: joi.string().required().trim(),
@@ -82,8 +86,24 @@ const schemaAddProvider = joi.object().keys({
   )).optional().allow([]).default([])
 }).options({stripUnknown: true})
 
-const addProvider = (input) => {
-  return joi.validate(input, schemaAddProvider)
+const schemaAddBirth = joi.object().keys({
+  earTag: joi.string().required().trim(),
+  birthDate: joi.string().required().trim(),
+  breed: joi.string().required().trim(),
+  gender: joi.string().optional().trim().allow('').default(''),
+  skinColor: joi.string().optional().trim().allow('').default(''),
+  birthWeight: joi.number().optional().default(0),
+  birthName: joi.string().optional().trim().allow('').default(''),
+  motherEarTag: joi.string().optional().trim().allow('').default(''),
+  birthExploitation: joi.string().optional().trim().allow('').default(''),
+  birthType1: joi.string().optional().trim().allow('').default(''),
+  birthType2: joi.string().optional().trim().allow('').default(''),
+  hasEmbryoTransfer: joi.boolean().optional().default(false),
+  crotalDonorTag: joi.string().optional().trim().allow('').default('')
+}).options({stripUnknown: true})
+
+const addBirth = (input) => {
+  return joi.validate(input, schemaAddBirth)
 }
 
 const schemaAddClient = joi.object().keys({
@@ -111,6 +131,14 @@ const schemaAddClient = joi.object().keys({
 
 const addClient = (input) => {
   return joi.validate(input, schemaAddClient)
+}
+
+const schemaGetId = joi.object().keys({
+  id: joi.string().required().trim()
+}).options({stripUnknown: true})
+
+const getId = (input) => {
+  return joi.validate(input, schemaGetId)
 }
 
 const schemaAddPurchase = joi.object().keys({
@@ -178,5 +206,7 @@ export {
   addPurchase,
   addClient,
   getByUserId,
-  addProduct
+  addProduct,
+  addBirth,
+  getId
 }

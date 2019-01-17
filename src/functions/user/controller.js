@@ -269,6 +269,27 @@ const addProduct = async ({input, auth}) => {
   }
 }
 
+const addBirth = async ({input, auth}) => {
+  const {error, value: params} = validators.addBirth(input)
+  if (error) {
+    throw error
+  }
+
+  const {sub: internalUserId} = auth
+
+  const product = await db.executeQuery({
+    resource: '/addBirth',
+    input: {
+      internalUserId,
+      birth: params
+    }
+  })
+
+  return {
+    ...product
+  }
+}
+
 const getPurchases = async ({auth}) => {
   const {sub: internalUserId} = auth
   const purchases = await db.executeQuery({
@@ -313,6 +334,35 @@ const getProducts = async ({auth}) => {
   return products
 }
 
+const getBirths = async ({auth}) => {
+  const {sub: internalUserId} = auth
+  const products = await db.executeQuery({
+    resource: '/getBirths',
+    input: {
+      internalUserId
+    }
+  })
+  return products
+}
+
+const deleteBirth = async ({auth, input}) => {
+
+  const {error, value: params} = validators.getId(input)
+  if (error) {
+    throw error
+  }
+
+  const {sub: internalUserId} = auth
+  const products = await db.executeQuery({
+    resource: '/deleteBirth',
+    input: {
+      internalUserId,
+      id: params.id
+    }
+  })
+  return products
+}
+
 const addImage = async ({image, contentType}) => {
   if (!image || !contentType) {
     return {
@@ -349,5 +399,8 @@ export {
   getProviders,
   addProduct,
   getProducts,
-  addImage
+  addImage,
+  addBirth,
+  getBirths,
+  deleteBirth
 }

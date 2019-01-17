@@ -181,6 +181,55 @@ const addProvider = async ({
   }
 }
 
+const addBirth = async ({
+                          internalUserId,
+                          birth: values
+                        }) => {
+  try {
+    const id = cuid()
+    const redisInstance = await getRedisClient()
+    const finalValue = {
+      id,
+      ...values
+    }
+    await redisInstance.hset([`BIRTHS:${internalUserId}`, id, JSON.stringify(finalValue)])
+    return finalValue
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const getBirths = async ({
+                           internalUserId
+                         }) => {
+  try {
+    const redisInstance = await getRedisClient()
+    const values = await redisInstance.hvals([`BIRTHS:${internalUserId}`])
+
+    return values.map((value) => {
+      return JSON.parse(value)
+    })
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const deleteBirth = async ({
+                             internalUserId,
+                             id
+                           }) => {
+  try {
+    const redisInstance = await getRedisClient()
+    const result = await redisInstance.hdel([`BIRTHS:${internalUserId}`, id])
+    return result
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 const addPurchase = async ({
                              internalUserId,
                              purchase: values
@@ -316,7 +365,10 @@ const collectionHandlers = {
   '/addProduct': addProduct,
   '/getProducts': getProducts,
   '/addClient': addClient,
-  '/getClients': getClients
+  '/getClients': getClients,
+  '/addBirth': addBirth,
+  '/getBirths': getBirths,
+  '/deleteBirth': deleteBirth
 }
 
 const isDisconnection = (error) => {
