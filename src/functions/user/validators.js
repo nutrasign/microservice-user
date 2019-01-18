@@ -99,7 +99,10 @@ const schemaAddBirth = joi.object().keys({
   birthType1: joi.string().optional().trim().allow('').default(''),
   birthType2: joi.string().optional().trim().allow('').default(''),
   hasEmbryoTransfer: joi.boolean().optional().default(false),
-  crotalDonorTag: joi.string().optional().trim().allow('').default('')
+  crotalDonorTag: joi.string().optional().trim().allow('').default(''),
+  declarationNumber: joi.string().optional().trim().allow('').default(''),
+  identification: joi.string().optional().trim().allow('').default(''),
+  identificationDate: joi.string().optional().trim().allow('').default('')
 }).options({stripUnknown: true})
 
 const addBirth = (input) => {

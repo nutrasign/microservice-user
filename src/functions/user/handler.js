@@ -67,12 +67,14 @@ const collectionHandlers = {
   '/animals/birth': {
     'POST': ({event, auth}) => {
       return controller.addBirth({input: event.body, auth})
-    },
+    }
+  },
+  '/animals': {
     'GET': ({event, auth}) => {
-      return controller.getBirths({input: event.pathParameters, auth})
+      return controller.getBirths({input: event.queryStringParameters, auth})
     },
     'DELETE': ({event, auth}) => {
-      return controller.deleteBirth({input: event.body, auth})
+      return controller.deleteBirth({input: event.queryStringParameters, auth})
     }
   },
   '/miscellaneous/add-image': {

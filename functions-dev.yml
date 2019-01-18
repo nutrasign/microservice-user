@@ -108,14 +108,14 @@ functions:
           name: Authorizer
           resultTtlInSeconds: 0
     - http:
-        path: /animals/birth
+        path: /animals
         method: get
         cors: true
         authorizer:
           name: Authorizer
           resultTtlInSeconds: 0
     - http:
-        path: /animals/birth
+        path: /animals
         method: delete
         cors: true
         authorizer:
