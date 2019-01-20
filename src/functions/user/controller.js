@@ -269,8 +269,8 @@ const addProduct = async ({input, auth}) => {
   }
 }
 
-const addBirth = async ({input, auth}) => {
-  const {error, value: params} = validators.addBirth(input)
+const addAnimalBirth = async ({input, auth}) => {
+  const {error, value: params} = validators.addAnimalBirth(input)
   if (error) {
     throw error
   }
@@ -278,10 +278,31 @@ const addBirth = async ({input, auth}) => {
   const {sub: internalUserId} = auth
 
   const product = await db.executeQuery({
-    resource: '/addBirth',
+    resource: '/addAnimalBirth',
     input: {
       internalUserId,
       birth: params
+    }
+  })
+
+  return {
+    ...product
+  }
+}
+
+const addAnimalPurchase = async ({input, auth}) => {
+  const {error, value: params} = validators.addAnimalPurchase(input)
+  if (error) {
+    throw error
+  }
+
+  const {sub: internalUserId} = auth
+
+  const product = await db.executeQuery({
+    resource: '/addAnimalPurchase',
+    input: {
+      internalUserId,
+      purchase: params
     }
   })
 
@@ -334,10 +355,10 @@ const getProducts = async ({auth}) => {
   return products
 }
 
-const getBirths = async ({auth}) => {
+const getAnimals = async ({auth}) => {
   const {sub: internalUserId} = auth
   const products = await db.executeQuery({
-    resource: '/getBirths',
+    resource: '/getAnimals',
     input: {
       internalUserId
     }
@@ -345,7 +366,7 @@ const getBirths = async ({auth}) => {
   return products
 }
 
-const deleteBirth = async ({auth, input}) => {
+const deleteAnimal = async ({auth, input}) => {
 
   const {error, value: params} = validators.getId(input)
   if (error) {
@@ -354,7 +375,7 @@ const deleteBirth = async ({auth, input}) => {
 
   const {sub: internalUserId} = auth
   const products = await db.executeQuery({
-    resource: '/deleteBirth',
+    resource: '/deleteAnimal',
     input: {
       internalUserId,
       id: params.id
@@ -400,7 +421,8 @@ export {
   addProduct,
   getProducts,
   addImage,
-  addBirth,
-  getBirths,
-  deleteBirth
+  addAnimalBirth,
+  getAnimals,
+  deleteAnimal,
+  addAnimalPurchase
 }

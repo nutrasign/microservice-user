@@ -108,6 +108,13 @@ functions:
           name: Authorizer
           resultTtlInSeconds: 0
     - http:
+        path: /animals/purchase
+        method: post
+        cors: true
+        authorizer:
+          name: Authorizer
+          resultTtlInSeconds: 0
+    - http:
         path: /animals
         method: get
         cors: true

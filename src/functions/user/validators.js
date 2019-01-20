@@ -86,7 +86,7 @@ const schemaAddProvider = joi.object().keys({
   )).optional().allow([]).default([])
 }).options({stripUnknown: true})
 
-const schemaAddBirth = joi.object().keys({
+const schemaAddAnimalBirth = joi.object().keys({
   earTag: joi.string().required().trim(),
   birthDate: joi.string().required().trim(),
   breed: joi.string().required().trim(),
@@ -102,11 +102,36 @@ const schemaAddBirth = joi.object().keys({
   crotalDonorTag: joi.string().optional().trim().allow('').default(''),
   declarationNumber: joi.string().optional().trim().allow('').default(''),
   identification: joi.string().optional().trim().allow('').default(''),
-  identificationDate: joi.string().optional().trim().allow('').default('')
+  identificationDate: joi.string().optional().trim().allow('').default(''),
+  declarationDate: joi.string().optional().trim().allow('').default('')
 }).options({stripUnknown: true})
 
-const addBirth = (input) => {
-  return joi.validate(input, schemaAddBirth)
+const addAnimalBirth = (input) => {
+  return joi.validate(input, schemaAddAnimalBirth)
+}
+
+const schemaAddAnimalPurchase = joi.object().keys({
+  earTag: joi.string().required().trim(),
+  birthDate: joi.string().required().trim(),
+  breed: joi.string().required().trim(),
+  gender: joi.string().optional().trim().allow('').default(''),
+  skinColor: joi.string().optional().trim().allow('').default(''),
+  motherEarTag: joi.string().optional().trim().allow('').default(''),
+  birthName: joi.string().optional().trim().allow('').default(''),
+  purchaseDate: joi.string().required().trim(),
+  documentNumber: joi.string().optional().trim().allow('').default(''),
+  birthType: joi.string().optional().trim().allow('').default(''),
+  provider: joi.string().required().trim(),
+  originCode: joi.string().required().trim(),
+  incomingWeight: joi.number().required(),
+  pricePerKilogram: joi.number().optional().default(0),
+  totalPrice: joi.number().optional().default(0),
+  declarationNumber: joi.string().optional().trim().allow('').default(''),
+  declarationDate: joi.string().optional().trim().allow('').default('')
+}).options({stripUnknown: true})
+
+const addAnimalPurchase = (input) => {
+  return joi.validate(input, schemaAddAnimalPurchase)
 }
 
 const schemaAddClient = joi.object().keys({
@@ -210,6 +235,7 @@ export {
   addClient,
   getByUserId,
   addProduct,
-  addBirth,
-  getId
+  addAnimalBirth,
+  getId,
+  addAnimalPurchase
 }

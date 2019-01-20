@@ -181,7 +181,26 @@ const addProvider = async ({
   }
 }
 
-const addBirth = async ({
+const addAnimalPurchase = async ({
+                          internalUserId,
+                          purchase: values
+                        }) => {
+  try {
+    const id = cuid()
+    const redisInstance = await getRedisClient()
+    const finalValue = {
+      id,
+      ...values
+    }
+    await redisInstance.hset([`ANIMAL_PURCHASES:${internalUserId}`, id, JSON.stringify(finalValue)])
+    return finalValue
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+const addAnimalBirth = async ({
                           internalUserId,
                           birth: values
                         }) => {
@@ -192,7 +211,7 @@ const addBirth = async ({
       id,
       ...values
     }
-    await redisInstance.hset([`BIRTHS:${internalUserId}`, id, JSON.stringify(finalValue)])
+    await redisInstance.hset([`ANIMAL_BIRTHS:${internalUserId}`, id, JSON.stringify(finalValue)])
     return finalValue
   } catch (error) {
     console.error(error)
@@ -200,14 +219,15 @@ const addBirth = async ({
   }
 }
 
-const getBirths = async ({
+const getAnimals = async ({
                            internalUserId
                          }) => {
   try {
     const redisInstance = await getRedisClient()
-    const values = await redisInstance.hvals([`BIRTHS:${internalUserId}`])
+    const births = await redisInstance.hvals([`ANIMAL_BIRTHS:${internalUserId}`])
+    const purchases = await redisInstance.hvals([`ANIMAL_PURCHASES:${internalUserId}`])
 
-    return values.map((value) => {
+    return [...births, ...purchases].map((value) => {
       return JSON.parse(value)
     })
   } catch (error) {
@@ -216,14 +236,15 @@ const getBirths = async ({
   }
 }
 
-const deleteBirth = async ({
+const deleteAnimal = async ({
                              internalUserId,
                              id
                            }) => {
   try {
     const redisInstance = await getRedisClient()
-    const result = await redisInstance.hdel([`BIRTHS:${internalUserId}`, id])
-    return result
+    await redisInstance.hdel([`ANIMAL_BIRTHS:${internalUserId}`, id])
+    await redisInstance.hdel([`ANIMAL_PURCHASES:${internalUserId}`, id])
+    return 'ok'
   } catch (error) {
     console.error(error)
     throw error
@@ -241,7 +262,7 @@ const addPurchase = async ({
       id,
       ...values
     }
-    await redisInstance.hset([`PURCHASES:${internalUserId}`, id, JSON.stringify(finalValue)])
+    await redisInstance.hset([`ANIMAL_PURCHASES:${internalUserId}`, id, JSON.stringify(finalValue)])
     return finalValue
   } catch (error) {
     console.error(error)
@@ -273,7 +294,7 @@ const getPurchases = async ({
                             }) => {
   try {
     const redisInstance = await getRedisClient()
-    const values = await redisInstance.hvals([`PURCHASES:${internalUserId}`])
+    const values = await redisInstance.hvals([`ANIMAL_PURCHASES:${internalUserId}`])
 
     return values.map((value) => {
       return JSON.parse(value)
@@ -366,9 +387,10 @@ const collectionHandlers = {
   '/getProducts': getProducts,
   '/addClient': addClient,
   '/getClients': getClients,
-  '/addBirth': addBirth,
-  '/getBirths': getBirths,
-  '/deleteBirth': deleteBirth
+  '/addAnimalBirth': addAnimalBirth,
+  '/getAnimals': getAnimals,
+  '/deleteAnimal': deleteAnimal,
+  '/addAnimalPurchase': addAnimalPurchase
 }
 
 const isDisconnection = (error) => {
